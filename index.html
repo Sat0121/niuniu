@@ -14,7 +14,7 @@
   --secondary-c:#cce8e2;--on-secondary-c:#05201c;--tertiary-c:#cce5ff;--on-tertiary-c:#001e31;
   --surface:#f4fbf8;--sc-low:#eff5f2;--sc:#e9efec;--sc-high:#e3eae7;
   --on-surface:#161d1b;--on-surface-v:#3f4946;--outline:#6f7976;--outline-v:#bec9c5;
-  --error:#ba1a1a;--scrim:rgba(0,0,0,.4);
+  --error:#ba1a1a;--error-c:#ffdad6;--on-error-c:#410002;--scrim:rgba(0,0,0,.4);
   --font:'Roboto','Noto Sans JP','Hiragino Sans','Yu Gothic',system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
@@ -22,13 +22,13 @@
   --secondary-c:#334b47;--on-secondary-c:#cce8e2;--tertiary-c:#2d4961;--on-tertiary-c:#cce5ff;
   --surface:#0e1513;--sc-low:#161d1b;--sc:#1a211f;--sc-high:#252b2a;
   --on-surface:#dde4e1;--on-surface-v:#bec9c5;--outline:#899390;--outline-v:#3f4946;
-  --error:#ffb4ab;--scrim:rgba(0,0,0,.6)}}
+  --error:#ffb4ab;--error-c:#93000a;--on-error-c:#ffdad6;--scrim:rgba(0,0,0,.6)}}
 :root[data-theme="dark"]{color-scheme:dark;
   --primary:#82d5c8;--on-primary:#003731;--primary-c:#005048;--on-primary-c:#9ef2e4;
   --secondary-c:#334b47;--on-secondary-c:#cce8e2;--tertiary-c:#2d4961;--on-tertiary-c:#cce5ff;
   --surface:#0e1513;--sc-low:#161d1b;--sc:#1a211f;--sc-high:#252b2a;
   --on-surface:#dde4e1;--on-surface-v:#bec9c5;--outline:#899390;--outline-v:#3f4946;
-  --error:#ffb4ab;--scrim:rgba(0,0,0,.6)}
+  --error:#ffb4ab;--error-c:#93000a;--on-error-c:#ffdad6;--scrim:rgba(0,0,0,.6)}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--surface);color:var(--on-surface);font-family:var(--font);font-size:15px;line-height:1.5;overflow:hidden;
@@ -64,9 +64,20 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 @keyframes pop{from{transform:scaleX(.1)}to{transform:scaleX(1)}}
 .side{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:4px}
 .side .btn{width:100%;height:auto;min-height:30px;max-height:44px;flex:1;padding:0 6px;font-size:13px}
-.info{align-items:flex-start;padding-left:4px;font-size:11px;line-height:1.4;color:var(--on-surface-v);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.info{align-items:flex-start;padding-left:4px;font-size:max(11px,calc(var(--cw)*.19));line-height:1.4;color:var(--on-surface-v);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
 .info .ok{color:var(--primary);font-weight:700}
-.badge{font-size:13px;font-weight:700;padding:2px 12px;border-radius:999px;background:var(--tertiary-c);color:var(--on-tertiary-c)}
+.role{font-size:max(14px,calc(var(--cw)*.34));line-height:1.15;font-weight:700;padding:.12em .6em;border-radius:999px;background:var(--tertiary-c);color:var(--on-tertiary-c);white-space:nowrap}
+.role.none{background:transparent;color:var(--on-surface-v);outline:2px solid var(--outline-v);outline-offset:-2px}
+.side.big{align-items:center}
+.side.big .role{font-size:calc(var(--cw)*.62)}
+.banner{width:calc(var(--cw)*5 + 24px);height:calc(var(--cw)*1.4);flex:none;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--sc);color:var(--on-surface);animation:rise .35s cubic-bezier(.2,0,0,1)}
+.banner strong{font-size:calc(var(--cw)*.52);line-height:1.15;font-weight:700;font-variant-numeric:tabular-nums}
+.banner small{font-size:max(11px,calc(var(--cw)*.17));font-variant-numeric:tabular-nums}
+.banner.win{background:var(--primary);color:var(--on-primary)}
+.banner.lose{background:var(--error-c);color:var(--on-error-c)}
+@keyframes rise{from{transform:scale(.8);opacity:0}to{transform:none;opacity:1}}
+.fly{position:fixed;z-index:40;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--tertiary-c);border:4px solid var(--primary);pointer-events:none;box-shadow:0 2px 4px rgba(0,0,0,.3)}
 
 .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px}
 .btn{font:500 14px var(--font);height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--outline);background:transparent;color:var(--primary);cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -104,7 +115,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 .set span{font-size:13px;font-weight:500;color:var(--on-surface-v)}
 .eg{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;background:var(--sc-high);border-radius:16px;padding:12px 16px;margin:0;font-size:14px;font-variant-numeric:tabular-nums}
 .eg dt{font-weight:700;white-space:nowrap}.eg dd{margin:0;min-width:0}
-@media (prefers-reduced-motion:reduce){.card.pop{animation:none}}
+@media (prefers-reduced-motion:reduce){.card.pop,.banner{animation:none}}
 </style>
 
 </head>
@@ -141,7 +152,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <h3>チップのやり取り</h3>
     <p>役の数字の差がそのまま点数になる。n牛と m牛なら、高い側が差の点数 × レートを受け取る。無牛は0、牛牛は10として数える。</p>
     <h3>対CPUと2人対戦</h3>
-    <p>対CPUでは、確定すると相手の札が順に開く。CPUは必ず最高の形で置いている。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
+    <p>対CPUでは、確定すると相手の札が下段から順に開く。CPUは必ず最高の形で置いている。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
   </div>
 </div>
 
@@ -244,23 +255,47 @@ function deal(){
   st.res=null;st.phase='arrange';sqs.forEach(q=>q.close());renderAll();
 }
 function settle(){
-  const a=score(row(st.seats[0],0,5)),b=score(row(st.seats[1],0,5)),diff=a-b;
+  const a=score(row(st.seats[0],0,5)),b=score(row(st.seats[1],0,5)),diff=a-b,from=[chips(0),chips(1)];
   let amt=Math.abs(diff)*st.rate;
   if(diff){const loser=diff<0?0:1,have=chips(loser);if(have!==null)amt=Math.min(amt,have);pay(loser,-amt);pay(1-loser,amt);save();}
-  st.res={a,b,diff,amt};st.phase='result';
+  st.res={a,b,diff,amt,from};st.phase='result';
+}
+function finishRound(){settle();renderAll();payAnim();}
+/* one chip per point flies from the loser's counter to the winner's while both counters run */
+function payAnim(){
+  const r=st.res;if(!r||!r.diff||!r.amt||still())return;
+  const lo=r.diff<0?0:1,wi=1-lo,id=dealId;
+  const at=i=>seatEl[i].querySelector('.ch')||seatEl[i].querySelector('.nm');
+  const A=at(lo).getBoundingClientRect(),B=at(wi).getBoundingClientRect();
+  const ax=A.left+A.width/2,ay=A.top+A.height/2,dx=B.left+B.width/2-ax,dy=B.top+B.height/2-ay,n=Math.abs(r.diff);
+  for(let k=0;k<n;k++){
+    const f=el('div','fly');f.style.left=ax+'px';f.style.top=ay+'px';document.body.appendChild(f);
+    const j=(k%2?1:-1)*(10+k*3);
+    f.animate([{transform:'translate(0,0) scale(.6)',opacity:0},{opacity:1,offset:.15},{transform:'translate('+(dx/2+j)+'px,'+dy/2+'px) scale(1.25)',offset:.55},{transform:'translate('+dx+'px,'+dy+'px) scale(.8)',opacity:1}],
+      {duration:650,delay:k*80,easing:'cubic-bezier(.3,0,.2,1)',fill:'backwards'}).onfinish=()=>f.remove();
+  }
+  const total=650+(n-1)*80,t0=performance.now(),els=[0,1].map(i=>seatEl[i].querySelector('.ch'));
+  els.forEach((e,i)=>{if(e)e.textContent=r.from[i];});
+  (function tick(now){
+    if(id!==dealId)return;
+    const t=Math.min(1,Math.max(0,(now-t0-300)/(total-300)));
+    els.forEach((e,i)=>{if(e&&e.isConnected)e.textContent=Math.round(r.from[i]+(chips(i)-r.from[i])*t);});
+    if(t<1)requestAnimationFrame(tick);
+    else{const w=els[wi];if(w&&w.isConnected)w.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:320});}
+  })(t0);
 }
 function confirmSeat(i){
   st.seats[i].ready=true;sqs[i].close();
   if(!st.seats.every(s=>s.ready)){renderSeat(i);return;}
   st.seats.forEach(s=>{if(s.human){s.cards.forEach(c=>c.open=true);s.just=-1;}});
   const cpu=st.seats[1];
-  if(cpu.human||still()){cpu.cards.forEach(c=>c.open=true);settle();renderAll();return;}
+  if(cpu.human||still()){cpu.cards.forEach(c=>c.open=true);finishRound();return;}
   st.phase='reveal';renderAll();
   const id=dealId;let k=0;
   setTimeout(function step(){
     if(id!==dealId)return;
-    cpu.cards[k].open=true;cpu.just=k;k++;
-    if(k>=5){settle();renderAll();}else{renderSeat(1);setTimeout(step,380);}
+    const ci=[2,3,4,0,1][k];cpu.cards[ci].open=true;cpu.just=ci;k++;
+    if(k>=5)finishRound();else{renderSeat(1);setTimeout(step,k===3?900:420);}
   },400);
 }
 function move(i,a,b){const s=st.seats[i];[s.pos[a],s.pos[b]]=[s.pos[b],s.pos[a]];s.just=-1;renderSeat(i);}
@@ -305,13 +340,9 @@ function renderSeat(i){
   const head=el('div','shead');head.appendChild(el('span','nm',seatName(i)));
   if(chips(i)!==null)head.appendChild(el('span','ch',chips(i)));
   const msg=el('span','msg');head.appendChild(msg);
-  if(st.phase==='result'){
-    const d=i===0?st.res.diff:-st.res.diff;
-    if(!s.human){msg.textContent=NAME(st.res.b)+' 対 '+NAME(st.res.a);}
-    else if(d>0){msg.textContent='勝ち ＋'+st.res.amt;msg.classList.add('win');}
-    else if(d<0){msg.textContent='負け −'+st.res.amt;msg.classList.add('lose');}
-    else msg.textContent='引き分け';
-  }else if(!s.human)msg.textContent=st.phase==='reveal'?'開いている':'最高の形で配置済み';
+  const d=st.phase==='result'?(i===0?st.res.diff:-st.res.diff):0;
+  if(st.phase==='result'){if(!s.human)msg.textContent=d>0?'勝ち':d<0?'負け':'引き分け';
+  }else if(!s.human)msg.textContent=st.phase==='reveal'?'下段から開いている':'最高の形で配置済み';
   else if(s.ready)msg.textContent=st.phase==='reveal'?'相手の札を開いている':'相手の確定を待っている';
   else msg.textContent=placed(s)?'配置を確かめて確定':'ドラッグで配置・押して絞る';
   root.appendChild(head);
@@ -337,10 +368,16 @@ function renderSeat(i){
   }
   const info=el('div','side info');mk(2,5,'下段').appendChild(info);
   const top=row(s,0,2),bot=row(s,2,5),ok=r=>r.every(c=>c&&c.open);
-  if(ok(top)&&ok(bot))info.appendChild(el('b','badge',NAME(score([...top,...bot]))));
+  if(ok(top)&&ok(bot)){const n=score([...top,...bot]),b=el('b','role'+(n?'':' none'),NAME(n));
+    if(live)info.appendChild(b);else{act.classList.add('big');act.appendChild(b);}}
   if(ok(top))info.appendChild(el('span','','上 '+top.map(V).join('+')+'='+(V(top[0])+V(top[1]))));
   if(ok(bot)){const m=bot.reduce((a,c)=>a+V(c),0),good=m%10===0;info.appendChild(el('span',good?'ok':'','下 '+bot.map(V).join('+')+'='+m+(good?' ○':' ×')));}
-  if(s.human)mk(5,10,'手札');
+  if(s.human&&st.phase==='result'){
+    const r=st.res,bn=el('div','banner '+(d>0?'win':d<0?'lose':'draw'));
+    bn.appendChild(el('strong','',d>0?'勝ち ＋'+r.amt:d<0?'負け −'+r.amt:'引き分け'));
+    bn.appendChild(el('small','',NAME(i===0?r.a:r.b)+' 対 '+NAME(i===0?r.b:r.a)+(d?' ・ '+Math.abs(d)+'点 × レート'+st.rate:'')));
+    rows.appendChild(bn);
+  }else if(s.human)mk(5,10,'手札');
 }
 function layout(){
   seatEl.forEach((e,i)=>{
