@@ -33,7 +33,7 @@
 html,body{height:100%}
 body{background:var(--surface);color:var(--on-surface);font-family:var(--font);font-size:15px;line-height:1.5;overflow:hidden;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px}
-.app{height:100%;max-width:920px;margin:0 auto;display:grid;grid-template-rows:minmax(0,2fr) auto minmax(0,3fr);gap:8px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.app{height:100%;max-width:920px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,2fr) auto minmax(0,3fr);gap:8px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .app.two{grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)}
 .app.many{grid-template-rows:minmax(0,9fr) auto minmax(0,11fr)}
 
@@ -113,7 +113,11 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 @keyframes rise{from{transform:scale(.8);opacity:0}to{transform:none;opacity:1}}
 .fly{position:fixed;z-index:40;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
 
-.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-height:40px;min-width:0}
+.bar .btn{padding:0 9px;font-size:13px}
+.bar .gap{flex:1}
+@media (min-width:700px){.bar{gap:10px}.bar .btn{padding:0 18px;font-size:14px}}
+.bar #nextBtn{font-size:18px}
 .btn{font:500 14px var(--font);height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--outline);background:transparent;color:var(--primary);cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap}
 .btn.filled{background:var(--primary);color:var(--on-primary);border-color:transparent}
 .btn.tonal{background:var(--secondary-c);color:var(--on-secondary-c);border-color:transparent}
@@ -159,7 +163,10 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
   <section class="opps" id="opps" hidden><div class="tiles" id="tiles"></div></section>
   <section class="seat" id="seat1"><div class="content"></div><div class="sqv" hidden></div></section>
   <div class="bar">
-    <button class="btn tonal" id="menuBtn" type="button">ルール・設定</button>
+    <button class="btn tonal" id="menuBtn" type="button">ルール</button>
+    <button class="btn" id="resetChips" type="button">リセット</button>
+    <span class="gap" id="barGap"></span>
+    <button class="btn" id="cpuBtn" type="button"></button>
     <span class="seg" id="modeSeg" role="group" aria-label="対戦相手">
       <button class="btn" id="modeCpu" type="button" data-mode="cpu">対CPU</button><button class="btn" id="modeTwo" type="button" data-mode="two">2人</button>
     </span>
@@ -170,12 +177,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 
 <div class="sheet" id="sheet" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <header><h2 id="sheetTitle">ルールと設定</h2><button class="btn" id="sheetClose" type="button">閉じる</button></header>
-    <div class="set"><span>レート（1点あたり）</span>
-      <span class="seg" id="rateSeg"><button class="btn" id="rate10" type="button" data-rate="10">10</button><button class="btn" id="rate50" type="button" data-rate="50">50</button><button class="btn" id="rate100" type="button" data-rate="100">100</button></span>
-      <button class="btn" id="resetChips" type="button">チップを1000に戻す</button></div>
-    <div class="set"><span>CPUの人数</span>
-      <span class="seg" id="cpuSeg"><button class="btn" id="cpu1" type="button" data-cpu="1">1</button><button class="btn" id="cpu2" type="button" data-cpu="2">2</button><button class="btn" id="cpu3" type="button" data-cpu="3">3</button><button class="btn" id="cpu4" type="button" data-cpu="4">4</button><button class="btn" id="cpu5" type="button" data-cpu="5">5</button></span></div>
+    <header><h2 id="sheetTitle">ルール</h2><button class="btn" id="sheetClose" type="button">閉じる</button></header>
     <h3>点の数え方</h3>
     <p>Aは1点、2〜9は数字どおり、10・J・Q・Kはすべて10点。</p>
     <h3>配置して役を作る</h3>
@@ -188,9 +190,9 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <h3>操作</h3>
     <p>札をドラッグして枠に置く。置いた札の上に別の札を落とすと入れ替わり、手札へ戻すこともできる。開いた札は押すだけでも空いている枠へ移る。伏せ札は押すと絞り台に移り、端や角を押さえて内側へ引くとめくれる。絞っている間は隅の数字が隠れていて、半分以上めくって離すと開く。5枚置いたら「確定」。</p>
     <h3>チップのやり取り</h3>
-    <p>役の数字の差がそのまま点数になる。n牛と m牛なら、高い側が差の点数 × レートを受け取る。無牛は0、牛牛は10として数える。</p>
+    <p>役の数字の差がそのまま点数になる。n牛と m牛なら、高い側が差1点につき10チップを受け取る。無牛は0、牛牛は10として数える。</p>
     <h3>対CPUと2人対戦</h3>
-    <p>対CPUでは相手を1〜5人から選べる（4人以上は2段に並ぶ）。確定すると、CPU1から順に1人ずつ拡大され、下段から札が開く。拡大中の画面を押すと次の相手へ進む。CPUは必ず最高の形で置いている。精算はあなたと各CPUの間で別々に行い、その合計があなたの増減になる。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
+    <p>対CPUでは「CPU ○人」のボタンを押すたびに相手が1〜5人で切り替わる（4人以上は2段に並ぶ）。確定すると、CPU1から順に1人ずつ拡大され、下段から札が開く。拡大中の画面を押すと次の相手へ進む。CPUは必ず最高の形で置いている。精算はあなたと各CPUの間で別々に行い、その合計があなたの増減になる。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
   </div>
 </div>
 
@@ -494,8 +496,8 @@ function renderSeat(i){
     const big=el('strong','',d>0?'勝ち ':d<0?'負け ':'引き分け');if(d)big.appendChild(el('span','num',(d>0?'＋':'−')+r.amt));bn.appendChild(big);
     const one=r.parts&&r.parts.length===1?r.parts[0]:null;
     bn.appendChild(el('small','',r.parts&&!one?r.parts.map(p=>'CPU'+p.n+' '+sgn(p.delta)).join(' ・ ')
-      :one?NAME(r.my)+' 対 '+NAME(one.sc)+(one.delta?' ・ '+Math.abs(r.my-one.sc)+'点 × レート'+st.rate:'')
-      :NAME(i===0?r.a:r.b)+' 対 '+NAME(i===0?r.b:r.a)+(d?' ・ '+Math.abs(d)+'点 × レート'+st.rate:'')));
+      :one?NAME(r.my)+' 対 '+NAME(one.sc)+(one.delta?' ・ '+Math.abs(r.my-one.sc)+'点 × '+st.rate:'')
+      :NAME(i===0?r.a:r.b)+' 対 '+NAME(i===0?r.b:r.a)+(d?' ・ '+Math.abs(d)+'点 × '+st.rate:'')));
     rows.appendChild(bn);
   }else if(s.human)mk(5,10,'手札');
 }
@@ -512,11 +514,10 @@ function renderAll(){
   seatEl[1].classList.toggle('flip',st.mode==='two');seatEl[1].classList.toggle('human',st.mode==='two');
   const cpu=st.mode==='cpu';$('#opps').hidden=!cpu;seatEl[1].hidden=cpu;$('#app').classList.toggle('many',cpu&&st.cpus.length>=4);
   renderSeat(0);if(cpu)renderTiles();else renderSeat(1);
-  document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.cpu===st.nCpu));
+  const cb=$('#cpuBtn');cb.textContent='CPU '+st.nCpu+'人';cb.disabled=!cpu;cb.setAttribute('aria-label','CPUの人数 '+st.nCpu+'人。押すと変わる');
   $('#modeCpu').setAttribute('aria-pressed',st.mode==='cpu');$('#modeTwo').setAttribute('aria-pressed',st.mode==='two');
-  document.querySelectorAll('#rateSeg .btn').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.rate===st.rate));
   const nb=$('#nextBtn'),done=st.phase==='result';if(done)nb.removeAttribute('data-off');else nb.setAttribute('data-off','');
-  $('#modeSeg').hidden=done;
+  $('#modeSeg').hidden=$('#cpuBtn').hidden=$('#barGap').hidden=done;
   layout();
 }
 
@@ -618,9 +619,15 @@ const sqs=[makeSq(0),makeSq(1)];
 /* ---------- bar, sheet, wiring ---------- */
 $('#nextBtn').onclick=()=>{if(st.phase==='result')deal();};
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(st.mode!==b.dataset.mode){st.mode=b.dataset.mode;deal();}});
-document.querySelectorAll('#rateSeg .btn').forEach(b=>b.onclick=()=>{st.rate=+b.dataset.rate;renderAll();});
-$('#resetChips').onclick=()=>{st.bank={cpu:1000,cpus:[1000,1000,1000,1000,1000],two:[1000,1000]};save();renderAll();};
-document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.onclick=()=>{st.nCpu=+b.dataset.cpu;try{localStorage.setItem('niuniu-cpus',st.nCpu);}catch(e){}if(st.mode==='cpu')deal();else renderAll();});
+/* reset asks for a second press, since the page cannot show a confirm dialog */
+let resetArm=0;
+$('#resetChips').onclick=e=>{
+  const b=e.currentTarget;
+  if(!resetArm){b.textContent='戻す？';resetArm=setTimeout(()=>{resetArm=0;b.textContent='リセット';},2500);return;}
+  clearTimeout(resetArm);resetArm=0;b.textContent='リセット';
+  st.bank={cpu:1000,cpus:[1000,1000,1000,1000,1000],two:[1000,1000]};save();deal();
+};
+$('#cpuBtn').onclick=()=>{st.nCpu=st.nCpu%5+1;try{localStorage.setItem('niuniu-cpus',st.nCpu);}catch(e){}deal();};
 const sheet=$('#sheet');
 $('#menuBtn').onclick=()=>{sheet.hidden=false;$('#sheetClose').focus();};
 $('#sheetClose').onclick=()=>{sheet.hidden=true;};
