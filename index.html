@@ -116,7 +116,17 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 .bar{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-height:40px;min-width:0}
 .bar .btn{padding:0 9px;font-size:13px}
 .bar .gap{flex:1}
-@media (min-width:700px){.bar{gap:10px}.bar .btn{padding:0 18px;font-size:14px}}
+#cpuSeg{flex:1;order:1}
+#cpuSeg .btn{flex:1;min-width:0;padding:0;font-size:15px;font-weight:700}
+#modeSeg{order:2}
+.bar #nextBtn{order:3}
+.bar .brk{order:4;flex-basis:100%;height:0}
+#menuBtn{order:5}#resetChips{order:6}
+#menuBtn,#resetChips{height:34px}
+.bar .gap{display:none}
+@media (min-width:600px){.bar{gap:10px;flex-wrap:nowrap}.bar .btn{padding:0 18px;font-size:14px}
+  #menuBtn,#resetChips{order:0;height:40px}.bar .gap{display:block;order:0}.bar .brk{display:none}
+  #cpuSeg{flex:none}#cpuSeg .btn{flex:none;width:44px;padding:0}}
 .bar #nextBtn{font-size:18px}
 .btn{font:500 14px var(--font);height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--outline);background:transparent;color:var(--primary);cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap}
 .btn.filled{background:var(--primary);color:var(--on-primary);border-color:transparent}
@@ -166,11 +176,12 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <button class="btn tonal" id="menuBtn" type="button">ルール</button>
     <button class="btn" id="resetChips" type="button">リセット</button>
     <span class="gap" id="barGap"></span>
-    <button class="btn" id="cpuBtn" type="button"></button>
+    <span class="seg" id="cpuSeg" role="group" aria-label="CPUの人数"><button class="btn" id="cpu1" type="button" data-cpu="1" aria-label="CPU 1人">1</button><button class="btn" id="cpu2" type="button" data-cpu="2" aria-label="CPU 2人">2</button><button class="btn" id="cpu3" type="button" data-cpu="3" aria-label="CPU 3人">3</button><button class="btn" id="cpu4" type="button" data-cpu="4" aria-label="CPU 4人">4</button><button class="btn" id="cpu5" type="button" data-cpu="5" aria-label="CPU 5人">5</button></span>
     <span class="seg" id="modeSeg" role="group" aria-label="対戦相手">
       <button class="btn" id="modeCpu" type="button" data-mode="cpu">対CPU</button><button class="btn" id="modeTwo" type="button" data-mode="two">2人</button>
     </span>
     <button class="btn filled" id="nextBtn" type="button">次の勝負</button>
+    <span class="brk"></span>
   </div>
   <section class="seat human" id="seat0"><div class="content"></div><div class="sqv" hidden></div></section>
 </div>
@@ -192,7 +203,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <h3>チップのやり取り</h3>
     <p>役の数字の差がそのまま点数になる。n牛と m牛なら、高い側が差1点につき10チップを受け取る。無牛は0、牛牛は10として数える。</p>
     <h3>対CPUと2人対戦</h3>
-    <p>対CPUでは「CPU ○人」のボタンを押すたびに相手が1〜5人で切り替わる（4人以上は2段に並ぶ）。確定すると、CPU1から順に1人ずつ拡大され、下段から札が開く。拡大中の画面を押すと次の相手へ進む。CPUは必ず最高の形で置いている。精算はあなたと各CPUの間で別々に行い、その合計があなたの増減になる。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
+    <p>対CPUでは、「対CPU」の左に並ぶ1〜5の数字で相手の人数を選ぶ（4人以上は2段に並ぶ）。確定すると、CPU1から順に1人ずつ拡大され、下段から札が開く。拡大中の画面を押すと次の相手へ進む。CPUは必ず最高の形で置いている。精算はあなたと各CPUの間で別々に行い、その合計があなたの増減になる。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
   </div>
 </div>
 
@@ -514,10 +525,10 @@ function renderAll(){
   seatEl[1].classList.toggle('flip',st.mode==='two');seatEl[1].classList.toggle('human',st.mode==='two');
   const cpu=st.mode==='cpu';$('#opps').hidden=!cpu;seatEl[1].hidden=cpu;$('#app').classList.toggle('many',cpu&&st.cpus.length>=4);
   renderSeat(0);if(cpu)renderTiles();else renderSeat(1);
-  const cb=$('#cpuBtn');cb.textContent='CPU '+st.nCpu+'人';cb.disabled=!cpu;cb.setAttribute('aria-label','CPUの人数 '+st.nCpu+'人。押すと変わる');
+  document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.setAttribute('aria-pressed',cpu&&+b.dataset.cpu===st.nCpu));
   $('#modeCpu').setAttribute('aria-pressed',st.mode==='cpu');$('#modeTwo').setAttribute('aria-pressed',st.mode==='two');
   const nb=$('#nextBtn'),done=st.phase==='result';if(done)nb.removeAttribute('data-off');else nb.setAttribute('data-off','');
-  $('#modeSeg').hidden=$('#cpuBtn').hidden=$('#barGap').hidden=done;
+  $('#modeSeg').hidden=$('#cpuSeg').hidden=$('#barGap').hidden=done;
   layout();
 }
 
@@ -627,7 +638,7 @@ $('#resetChips').onclick=e=>{
   clearTimeout(resetArm);resetArm=0;b.textContent='リセット';
   st.bank={cpu:1000,cpus:[1000,1000,1000,1000,1000],two:[1000,1000]};save();deal();
 };
-$('#cpuBtn').onclick=()=>{st.nCpu=st.nCpu%5+1;try{localStorage.setItem('niuniu-cpus',st.nCpu);}catch(e){}deal();};
+document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.onclick=()=>{if(st.mode==='cpu'&&st.nCpu===+b.dataset.cpu)return;st.nCpu=+b.dataset.cpu;st.mode='cpu';try{localStorage.setItem('niuniu-cpus',st.nCpu);}catch(e){}deal();});
 const sheet=$('#sheet');
 $('#menuBtn').onclick=()=>{sheet.hidden=false;$('#sheetClose').focus();};
 $('#sheetClose').onclick=()=>{sheet.hidden=true;};
