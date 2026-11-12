@@ -35,6 +35,36 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px}
 .app{height:100%;max-width:920px;margin:0 auto;display:grid;grid-template-rows:minmax(0,2fr) auto minmax(0,3fr);gap:8px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .app.two{grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)}
+.app.many{grid-template-rows:minmax(0,9fr) auto minmax(0,11fr)}
+
+.opps{position:relative;min-height:0}
+.tiles{height:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6px}
+.tile{--tw:20px;min-width:0;min-height:0;background:var(--sc);border-radius:18px;padding:6px 8px;display:flex;flex-direction:column;gap:4px;border:2px solid transparent}
+.tile.now{border-color:var(--primary)}
+.thead{display:flex;align-items:baseline;justify-content:space-between;gap:6px;font-size:12px;font-weight:500;white-space:nowrap}
+.thead b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.mini{flex:1;min-height:0;display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center}
+.mini div{display:flex;gap:3px;width:calc(var(--tw)*3 + 6px)}
+.mini canvas{width:var(--tw);aspect-ratio:5/7;border-radius:10%/7%;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.tfoot{min-height:22px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--on-surface-v);white-space:nowrap}
+.tfoot .role{font-size:13px}
+.delta{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.delta.p{color:var(--primary)}.delta.m{color:var(--error)}
+@media (min-width:700px){.thead{font-size:15px}.thead b{font-size:20px}.tfoot{font-size:13px;min-height:30px}.tfoot .role{font-size:17px}.delta{font-size:18px}}
+.spot{--cw:48px;position:absolute;inset:0;z-index:6;background:var(--sc-low);border:2px solid var(--primary);border-radius:24px;padding:6px 12px 10px;display:flex;flex-direction:column;gap:6px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,.3);animation:zoom .28s cubic-bezier(.2,0,0,1)}
+@keyframes zoom{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.spot .sh{display:flex;align-items:center;gap:10px;min-height:34px}
+.spot .sh b{font-size:17px;font-weight:500}
+.spot .sh .btn{margin-left:auto;height:32px;padding:0 12px;font-size:12px}
+.dots{display:flex;gap:5px}
+.dots span{width:8px;height:8px;border-radius:50%;background:var(--outline-v)}
+.dots span.on{background:var(--primary)}
+.spot .cards canvas{width:var(--cw);aspect-ratio:5/7;flex:none;border-radius:10%/7%;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3)) drop-shadow(0 2px 5px rgba(0,0,0,.15))}
+.spot canvas.pop{animation:pop .3s cubic-bezier(.2,0,0,1)}
+.vs{min-height:36px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;border-radius:12px;background:var(--sc);padding:2px 12px;font-variant-numeric:tabular-nums}
+.vs .delta{font-size:20px}
+.vs:empty{background:transparent}
 
 .seat{--cw:48px;position:relative;background:var(--sc);border-radius:24px;min-height:0;overflow:hidden}
 .seat.human{background:var(--sc-high)}
@@ -77,7 +107,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 .banner{width:calc(var(--cw)*5 + 24px);height:calc(var(--cw)*1.4);flex:none;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:var(--sc);color:var(--on-surface);animation:rise .35s cubic-bezier(.2,0,0,1)}
 .banner strong{font-size:calc(var(--cw)*.52);line-height:1.15;font-weight:700;font-variant-numeric:tabular-nums}
-.banner small{font-size:max(11px,calc(var(--cw)*.17));font-variant-numeric:tabular-nums}
+.banner small{font-size:max(11px,calc(var(--cw)*.17));line-height:1.3;text-align:center;padding:0 8px;font-variant-numeric:tabular-nums}
 .banner.win{background:var(--primary);color:var(--on-primary)}
 .banner.lose{background:var(--error-c);color:var(--on-error-c)}
 @keyframes rise{from{transform:scale(.8);opacity:0}to{transform:none;opacity:1}}
@@ -120,12 +150,13 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
 .set span{font-size:13px;font-weight:500;color:var(--on-surface-v)}
 .eg{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;background:var(--sc-high);border-radius:16px;padding:12px 16px;margin:0;font-size:14px;font-variant-numeric:tabular-nums}
 .eg dt{font-weight:700;white-space:nowrap}.eg dd{margin:0;min-width:0}
-@media (prefers-reduced-motion:reduce){.card.pop,.banner{animation:none}}
+@media (prefers-reduced-motion:reduce){.card.pop,.banner,.spot,.spot canvas.pop{animation:none}}
 </style>
 
 </head>
 <body>
 <div class="app" id="app">
+  <section class="opps" id="opps" hidden><div class="tiles" id="tiles"></div></section>
   <section class="seat" id="seat1"><div class="content"></div><div class="sqv" hidden></div></section>
   <div class="bar">
     <button class="btn tonal" id="menuBtn" type="button">ルール・設定</button>
@@ -143,6 +174,8 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <div class="set"><span>レート（1点あたり）</span>
       <span class="seg" id="rateSeg"><button class="btn" id="rate10" type="button" data-rate="10">10</button><button class="btn" id="rate50" type="button" data-rate="50">50</button><button class="btn" id="rate100" type="button" data-rate="100">100</button></span>
       <button class="btn" id="resetChips" type="button">チップを1000に戻す</button></div>
+    <div class="set"><span>CPUの人数</span>
+      <span class="seg" id="cpuSeg"><button class="btn" id="cpu1" type="button" data-cpu="1">1</button><button class="btn" id="cpu2" type="button" data-cpu="2">2</button><button class="btn" id="cpu3" type="button" data-cpu="3">3</button><button class="btn" id="cpu4" type="button" data-cpu="4">4</button><button class="btn" id="cpu5" type="button" data-cpu="5">5</button></span></div>
     <h3>点の数え方</h3>
     <p>Aは1点、2〜9は数字どおり、10・J・Q・Kはすべて10点。</p>
     <h3>配置して役を作る</h3>
@@ -157,7 +190,7 @@ body{background:var(--surface);color:var(--on-surface);font-family:var(--font);f
     <h3>チップのやり取り</h3>
     <p>役の数字の差がそのまま点数になる。n牛と m牛なら、高い側が差の点数 × レートを受け取る。無牛は0、牛牛は10として数える。</p>
     <h3>対CPUと2人対戦</h3>
-    <p>対CPUでは、確定すると相手の札が下段から順に開く。CPUは必ず最高の形で置いている。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
+    <p>対CPUでは相手を1〜5人から選べる（4人以上は2段に並ぶ）。確定すると、CPU1から順に1人ずつ拡大され、下段から札が開く。拡大中の画面を押すと次の相手へ進む。CPUは必ず最高の形で置いている。精算はあなたと各CPUの間で別々に行い、その合計があなたの増減になる。2人対戦では画面を挟んで向かい合って座る。上側の席は逆さに表示され、2人が同時に絞って配置できる。両方が確定すると精算される。</p>
   </div>
 </div>
 
@@ -239,13 +272,15 @@ const back=(()=>{
 /* ---------- game state ---------- */
 /* seat.pos: slots 0,1 = top row, 2,3,4 = bottom row, 5..9 = hand. Each holds an index into seat.cards, or null. */
 const seatEl=[$('#seat0'),$('#seat1')];
-const st={mode:'cpu',rate:10,phase:'arrange',seats:[],bank:{cpu:1000,two:[1000,1000]},res:null};
+const st={mode:'cpu',rate:10,phase:'arrange',seats:[],cpus:[],nCpu:3,now:-1,skip:false,skipAll:false,bank:{cpu:1000,cpus:[1000,1000,1000,1000,1000],two:[1000,1000]},res:null};
+try{const v=parseInt(localStorage.getItem('niuniu-cpus'),10);if(v>=1&&v<=5)st.nCpu=v;}catch(e){}
+const sgn=v=>(v>0?'＋':v<0?'−':'±')+Math.abs(v);
 try{const v=parseInt(localStorage.getItem('niuniu-chips'),10);if(v>0)st.bank.cpu=v;}catch(e){}
 const save=()=>{try{localStorage.setItem('niuniu-chips',st.bank.cpu);}catch(e){}};
 const still=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 const chips=i=>st.mode==='cpu'?(i===0?st.bank.cpu:null):st.bank.two[i];
 const pay=(i,v)=>{if(st.mode==='cpu'){if(i===0)st.bank.cpu+=v;}else st.bank.two[i]+=v;};
-const seatName=i=>st.mode==='cpu'?['あなた','CPU'][i]:['プレイヤー1','プレイヤー2'][i];
+const seatName=i=>st.mode==='cpu'?'あなた':['プレイヤー1','プレイヤー2'][i];
 const newSeat=(cards,human)=>({cards,human,ready:!human,just:-1,pos:human?[null,null,null,null,null,0,1,2,3,4]:[0,1,2,3,4,null,null,null,null,null]});
 const row=(s,a,b)=>s.pos.slice(a,b).map(v=>v===null?null:s.cards[v]);
 const placed=s=>s.pos.slice(0,5).every(v=>v!==null);
@@ -256,13 +291,21 @@ function deal(){
   else if(st.bank.two.some(v=>v<=0))st.bank.two=[1000,1000];
   const d=[];for(const s of 'shcd')for(let r=1;r<=13;r++)d.push({r,s,open:false});
   for(let i=51;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
-  st.seats=[newSeat(d.slice(0,5),true),st.mode==='two'?newSeat(d.slice(5,10),true):newSeat(bestArrange(d.slice(5,10)),false)];
+  st.seats=[newSeat(d.slice(0,5),true)];st.cpus=[];st.now=-1;closeSpot();
+  if(st.mode==='two')st.seats.push(newSeat(d.slice(5,10),true));
+  else for(let i=0;i<st.nCpu;i++){if(st.bank.cpus[i]<=0)st.bank.cpus[i]=1000;st.cpus.push({cards:bestArrange(d.slice(5+5*i,10+5*i)),done:false,delta:0});}
   st.res=null;st.phase='arrange';sqs.forEach(q=>q.close());renderAll();
 }
 function settle(){
+  if(st.mode==='cpu'){
+    /* you settle with each CPU separately; the sum is your change */
+    const my=score(row(st.seats[0],0,5)),from=[st.bank.cpu],total=Math.max(st.cpus.reduce((a,c)=>a+c.delta,0),-st.bank.cpu);
+    st.bank.cpu+=total;save();
+    st.res={my,diff:total,amt:Math.abs(total),from,parts:st.cpus.map((c,i)=>({n:i+1,delta:c.delta,sc:score(c.cards)}))};st.phase='result';return;
+  }
   const a=score(row(st.seats[0],0,5)),b=score(row(st.seats[1],0,5)),diff=a-b,from=[chips(0),chips(1)];
   let amt=Math.abs(diff)*st.rate;
-  if(diff){const loser=diff<0?0:1,have=chips(loser);if(have!==null)amt=Math.min(amt,have);pay(loser,-amt);pay(1-loser,amt);save();}
+  if(diff){const loser=diff<0?0:1;amt=Math.min(amt,chips(loser));pay(loser,-amt);pay(1-loser,amt);}
   st.res={a,b,diff,amt,from};st.phase='result';
 }
 function finishRound(){settle();renderAll();payAnim();}
@@ -282,7 +325,7 @@ function odo(e,from,to){
   setTimeout(()=>{if(id===dealId&&e.isConnected)e.textContent=to;},700+n*120);
 }
 function payAnim(){
-  const r=st.res;if(!r||!r.diff||!r.amt||still())return;
+  const r=st.res;if(!r||!r.amt||still())return;
   const id=dealId,root=getComputedStyle(document.documentElement);
   st.seats.forEach((s,i)=>{
     const ch=seatEl[i].querySelector('.ch'),num=seatEl[i].querySelector('.banner .num');
@@ -309,15 +352,68 @@ function confirmSeat(i){
   st.seats[i].ready=true;sqs[i].close();
   if(!st.seats.every(s=>s.ready)){renderSeat(i);return;}
   st.seats.forEach(s=>{if(s.human){s.cards.forEach(c=>c.open=true);s.just=-1;}});
-  const cpu=st.seats[1];
-  if(cpu.human||still()){cpu.cards.forEach(c=>c.open=true);finishRound();return;}
-  st.phase='reveal';renderAll();
-  const id=dealId;let k=0;
-  setTimeout(function step(){
+  if(st.mode==='two'){finishRound();return;}
+  revealCpus();
+}
+/* ---------- CPU tiles and the spotlight that enlarges one CPU at a time ---------- */
+function cv(c){const v=document.createElement('canvas');v.width=150;v.height=210;v.getContext('2d').drawImage(c.open?face(c):back,0,0,150,210);return v;}
+function renderTiles(){
+  const box=$('#tiles'),n=st.cpus.length,span=[0,6,3,2,3][n];box.textContent='';
+  st.cpus.forEach((c,i)=>{
+    const t=el('div','tile'+(st.now===i?' now':''));t.id='tile'+i;t.style.gridColumn='span '+(span||(i<3?2:3));
+    const h=el('div','thead');h.appendChild(el('span','','CPU'+(i+1)));h.appendChild(el('b','',st.bank.cpus[i]));t.appendChild(h);
+    const m=el('div','mini');[[0,2],[2,5]].forEach(([a,z])=>{const r=el('div');c.cards.slice(a,z).forEach(x=>r.appendChild(cv(x)));m.appendChild(r);});t.appendChild(m);
+    const f=el('div','tfoot');
+    if(c.done){const sc=score(c.cards);f.appendChild(el('b','role'+(sc?'':' none'),NAME(sc)));f.appendChild(el('span','delta '+(c.delta<0?'p':c.delta>0?'m':''),sgn(-c.delta)));}
+    else f.textContent=st.now===i?'開いている':'配置済み';
+    t.appendChild(f);box.appendChild(t);
+  });
+}
+let spotEl=null;
+function closeSpot(){if(spotEl){spotEl.remove();spotEl=null;}}
+function sizeSpot(){
+  if(!spotEl)return;const r=spotEl.querySelector('.rows');
+  spotEl.style.setProperty('--cw',Math.max(28,Math.floor(Math.min((r.clientWidth-24)/5,(r.clientHeight-6)/2*5/7,130)))+'px');
+}
+function drawSpot(i,flip,showRole){
+  const c=st.cpus[i],rows=spotEl.querySelector('.rows');rows.textContent='';
+  const mk=(a,z,side)=>{const r=el('div','r'),cs=el('div','cards');for(let k=a;k<z;k++){const v=cv(c.cards[k]);if(flip===k)v.classList.add('pop');cs.appendChild(v);}r.appendChild(cs);r.appendChild(side);rows.appendChild(r);};
+  const act=el('div','side big'),info=el('div','side info');mk(0,2,act);mk(2,5,info);
+  const top=c.cards.slice(0,2),bot=c.cards.slice(2,5),ok=r=>r.every(x=>x.open),sc=score(c.cards),my=score(row(st.seats[0],0,5)),vs=spotEl.querySelector('.vs');
+  if(showRole)act.appendChild(el('b','role'+(sc?'':' none'),NAME(sc)));
+  if(ok(top))info.appendChild(el('span','','上 '+top.map(V).join('+')+'='+(V(top[0])+V(top[1]))));
+  if(ok(bot)){const m=bot.reduce((a,x)=>a+V(x),0),good=m%10===0;info.appendChild(el('span',good?'ok':'','下 '+bot.map(V).join('+')+'='+m+(good?' ○':' ×')));}
+  vs.textContent='';
+  if(showRole){const d=(my-sc)*st.rate;vs.appendChild(el('span','','あなた '+NAME(my)+' 対 '+NAME(sc)));vs.appendChild(el('span','delta '+(d>0?'p':d<0?'m':''),sgn(d)));}
+}
+const wait=ms=>new Promise(res=>{const t0=performance.now();(function tick(){if(st.skip||performance.now()-t0>=ms)res();else setTimeout(tick,40);})();});
+async function spot(i,id){
+  const c=st.cpus[i];st.now=i;st.skip=st.skipAll;renderTiles();layout();
+  spotEl=el('div','spot');
+  const sh=el('div','sh');sh.appendChild(el('b','','CPU'+(i+1)));
+  const dots=el('span','dots');st.cpus.forEach((_,k)=>dots.appendChild(el('span',k<=i?'on':'')));sh.appendChild(dots);
+  const all=el('button','btn','全部開く');all.type='button';all.id='spotAll';all.onclick=e=>{e.stopPropagation();st.skipAll=true;st.skip=true;};sh.appendChild(all);
+  spotEl.appendChild(sh);spotEl.appendChild(el('div','rows'));spotEl.appendChild(el('div','vs'));
+  const O=$('#opps').getBoundingClientRect(),T=$('#tile'+i).getBoundingClientRect();
+  spotEl.style.transformOrigin=(T.left+T.width/2-O.left)+'px '+(T.top+T.height/2-O.top)+'px';
+  spotEl.onclick=()=>{st.skip=true;};
+  $('#opps').appendChild(spotEl);sizeSpot();drawSpot(i,-1,false);
+  await wait(500);
+  for(const k of [2,3,4,0,1]){
     if(id!==dealId)return;
-    const ci=[2,3,4,0,1][k];cpu.cards[ci].open=true;cpu.just=ci;k++;
-    if(k>=5)finishRound();else{renderSeat(1);setTimeout(step,k===3?900:420);}
-  },400);
+    if(k===0)await wait(550);
+    c.cards[k].open=true;drawSpot(i,k,false);await wait(360);
+  }
+  if(id!==dealId)return;
+  drawSpot(i,-1,true);await wait(1500);
+  if(id!==dealId)return;
+  c.delta=(score(row(st.seats[0],0,5))-score(c.cards))*st.rate;c.done=true;st.bank.cpus[i]=Math.max(0,st.bank.cpus[i]-c.delta);
+  closeSpot();st.now=-1;renderTiles();layout();st.skip=false;await wait(260);
+}
+async function revealCpus(){
+  const id=dealId;st.phase='reveal';st.skipAll=false;renderAll();
+  for(let i=0;i<st.cpus.length;i++){await spot(i,id);if(id!==dealId)return;}
+  finishRound();
 }
 function move(i,a,b){const s=st.seats[i];[s.pos[a],s.pos[b]]=[s.pos[b],s.pos[a]];s.just=-1;renderSeat(i);}
 function tap(i,ci,k){
@@ -361,7 +457,7 @@ function renderSeat(i){
   const head=el('div','shead');head.appendChild(el('span','nm',seatName(i)));
   if(chips(i)!==null)head.appendChild(el('span','ch',chips(i)));
   const msg=el('span','msg');head.appendChild(msg);
-  const d=st.phase==='result'?(i===0?st.res.diff:-st.res.diff):0;
+  const d=st.phase!=='result'?0:st.mode==='cpu'||i===0?st.res.diff:-st.res.diff;
   if(st.phase==='result'){if(!s.human)msg.textContent=d>0?'勝ち':d<0?'負け':'引き分け';
   }else if(!s.human)msg.textContent=st.phase==='reveal'?'下段から開いている':'最高の形で配置済み';
   else if(s.ready)msg.textContent=st.phase==='reveal'?'相手の札を開いている':'相手の確定を待っている';
@@ -396,20 +492,27 @@ function renderSeat(i){
   if(s.human&&st.phase==='result'){
     const r=st.res,bn=el('div','banner '+(d>0?'win':d<0?'lose':'draw'));
     const big=el('strong','',d>0?'勝ち ':d<0?'負け ':'引き分け');if(d)big.appendChild(el('span','num',(d>0?'＋':'−')+r.amt));bn.appendChild(big);
-    bn.appendChild(el('small','',NAME(i===0?r.a:r.b)+' 対 '+NAME(i===0?r.b:r.a)+(d?' ・ '+Math.abs(d)+'点 × レート'+st.rate:'')));
+    const one=r.parts&&r.parts.length===1?r.parts[0]:null;
+    bn.appendChild(el('small','',r.parts&&!one?r.parts.map(p=>'CPU'+p.n+' '+sgn(p.delta)).join(' ・ ')
+      :one?NAME(r.my)+' 対 '+NAME(one.sc)+(one.delta?' ・ '+Math.abs(r.my-one.sc)+'点 × レート'+st.rate:'')
+      :NAME(i===0?r.a:r.b)+' 対 '+NAME(i===0?r.b:r.a)+(d?' ・ '+Math.abs(d)+'点 × レート'+st.rate:'')));
     rows.appendChild(bn);
   }else if(s.human)mk(5,10,'手札');
 }
 function layout(){
   seatEl.forEach((e,i)=>{
-    const r=e.querySelector('.rows');if(!r)return;const n=st.seats[i].human?3:2;
+    const r=e.querySelector('.rows');if(!r||e.hidden||!st.seats[i])return;const n=3;
     e.style.setProperty('--cw',Math.max(28,Math.floor(Math.min((r.clientWidth-24)/5,(r.clientHeight-(n-1)*6)/n*5/7,130)))+'px');
   });
+  document.querySelectorAll('.tile').forEach(t=>{const m=t.querySelector('.mini');t.style.setProperty('--tw',Math.max(10,Math.floor(Math.min((m.clientWidth-6)/3,(m.clientHeight-3)/2*5/7,96)))+'px');});
+  sizeSpot();
 }
 function renderAll(){
   $('#app').classList.toggle('two',st.mode==='two');
   seatEl[1].classList.toggle('flip',st.mode==='two');seatEl[1].classList.toggle('human',st.mode==='two');
-  renderSeat(0);renderSeat(1);
+  const cpu=st.mode==='cpu';$('#opps').hidden=!cpu;seatEl[1].hidden=cpu;$('#app').classList.toggle('many',cpu&&st.cpus.length>=4);
+  renderSeat(0);if(cpu)renderTiles();else renderSeat(1);
+  document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.cpu===st.nCpu));
   $('#modeCpu').setAttribute('aria-pressed',st.mode==='cpu');$('#modeTwo').setAttribute('aria-pressed',st.mode==='two');
   document.querySelectorAll('#rateSeg .btn').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.rate===st.rate));
   const nb=$('#nextBtn'),done=st.phase==='result';if(done)nb.removeAttribute('data-off');else nb.setAttribute('data-off','');
@@ -516,7 +619,8 @@ const sqs=[makeSq(0),makeSq(1)];
 $('#nextBtn').onclick=()=>{if(st.phase==='result')deal();};
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(st.mode!==b.dataset.mode){st.mode=b.dataset.mode;deal();}});
 document.querySelectorAll('#rateSeg .btn').forEach(b=>b.onclick=()=>{st.rate=+b.dataset.rate;renderAll();});
-$('#resetChips').onclick=()=>{st.bank={cpu:1000,two:[1000,1000]};save();renderAll();};
+$('#resetChips').onclick=()=>{st.bank={cpu:1000,cpus:[1000,1000,1000,1000,1000],two:[1000,1000]};save();renderAll();};
+document.querySelectorAll('#cpuSeg .btn').forEach(b=>b.onclick=()=>{st.nCpu=+b.dataset.cpu;try{localStorage.setItem('niuniu-cpus',st.nCpu);}catch(e){}if(st.mode==='cpu')deal();else renderAll();});
 const sheet=$('#sheet');
 $('#menuBtn').onclick=()=>{sheet.hidden=false;$('#sheetClose').focus();};
 $('#sheetClose').onclick=()=>{sheet.hidden=true;};
